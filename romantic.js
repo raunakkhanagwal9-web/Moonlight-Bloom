@@ -1436,10 +1436,10 @@ function startBeat() {
   gsap.set(targetHeart, { scale: 1 });
   gsap.set(heartGlow, { scale: 1, opacity: 0.7 });
   beatTL = gsap.timeline({ repeat: -1, repeatDelay: 0.5 });
-  beatTL.to(targetHeart, { scale: 1.07, duration: 0.13, ease: 'power2.out', onStart: () => soundEngine.playHeartbeat() }, 0)
+beatTL.to(targetHeart, { scale: 1.07, duration: 0.13, ease: 'power2.out' }, 0)
     .to(heartGlow, { scale: 1.15, opacity: 0.9, duration: 0.13, ease: 'power2.out' }, 0)
     .to(targetHeart, { scale: 1.0, duration: 0.2, ease: 'power2.in' }, 0.13)
-    .to(targetHeart, { scale: 1.05, duration: 0.12, ease: 'power2.out', onStart: () => soundEngine.playHeartbeat() }, 0.3)
+.to(targetHeart, { scale: 1.05, duration: 0.12, ease: 'power2.out' }, 0.3)
     .to(targetHeart, { scale: 1.0, duration: 0.5, ease: 'power2.inOut' }, 0.42)
     .to(heartGlow, { scale: 1.0, opacity: 0.7, duration: 0.7, ease: 'power2.inOut' }, 0.3);
 }
