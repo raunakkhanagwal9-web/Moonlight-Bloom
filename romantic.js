@@ -1220,18 +1220,16 @@ class SoundEngine {
   }
 
   toggle() {
-    this.enabled = !this.enabled;
-    localStorage.setItem('romantic_sound_enabled', this.enabled ? 'true' : 'false');
-    if (this.enabled) {
-      this.init();
-      this.playChime(587.33, 1.5);
-      this.startAmbient();
-    } else {
-      this.stopAmbient();
-    }
-    return this.enabled;
+  this.enabled = !this.enabled;
+  localStorage.setItem('romantic_sound_enabled', this.enabled ? 'true' : 'false');
+  if (this.enabled) {
+    this.init();
+    this.playChime(587.33, 1.5);
+  } else {
+    this.stopAmbient();
   }
-}
+  return this.enabled;
+  }
 
 const soundEngine = new SoundEngine();
 
