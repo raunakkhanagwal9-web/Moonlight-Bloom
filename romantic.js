@@ -1311,12 +1311,22 @@ function initUIControls() {
   }
 
   if (btnSound) {
+  updateSoundUI();
+  btnSound.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const state = soundEngine.toggle();
     updateSoundUI();
-    btnSound.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const state = soundEngine.toggle();
-      updateSoundUI();
-    });
+    
+    // 🎵 Music bhi toggle karo
+    const bgMusic = document.getElementById('bgMusic');
+    if (bgMusic) {
+      if (state) {
+        bgMusic.play().catch(() => {});
+      } else {
+        bgMusic.pause();
+      }
+    }
+  });
   }
 
   // Customization Modal
@@ -1585,8 +1595,17 @@ function fire() {
   if (played) return;
   played = true;
   soundEngine.playChime(659.25, 2.0);
-  soundEngine.startAmbient();
   stopBeat();
+  
+  // 🎵 Background music start karo
+  const bgMusic = document.getElementById('bgMusic');
+  if (bgMusic) {
+    bgMusic.volume = 0.6;
+    bgMusic.play().catch((err) => {
+      console.log('Music play blocked:', err);
+    });
+  }
+  
   filmTL = buildFilm(tapGeom());
   filmTL.play(0);
 }
