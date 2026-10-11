@@ -1311,12 +1311,21 @@ function initUIControls() {
   }
 
   if (btnSound) {
+  updateSoundUI();
+  btnSound.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const state = soundEngine.toggle();
     updateSoundUI();
-    btnSound.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const state = soundEngine.toggle();
-      updateSoundUI();
-    });
+    
+    const bgMusic = document.getElementById('bgMusic');
+    if (bgMusic) {
+      if (state) {
+        bgMusic.play().catch(() => {});
+      } else {
+        bgMusic.pause();
+      }
+    }
+  });
   }
 
   // Customization Modal
