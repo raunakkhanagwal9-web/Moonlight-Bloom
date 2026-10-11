@@ -1585,8 +1585,14 @@ function fire() {
   if (played) return;
   played = true;
   soundEngine.playChime(659.25, 2.0);
-  soundEngine.startAmbient();
   stopBeat();
+  
+  const bgMusic = document.getElementById('bgMusic');
+  if (bgMusic) {
+    bgMusic.volume = 0.6;
+    bgMusic.play().catch(() => {});
+  }
+  
   filmTL = buildFilm(tapGeom());
   filmTL.play(0);
 }
