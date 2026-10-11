@@ -434,96 +434,9 @@ function growTree(treeX, treeY, treeRy, sizeMul, delay) {
       rot: rand(-0.55, 0.55), sway: rand(0, 6.28), t0
     });
   }
-}
+               }
 
-function drawBackground(t) {
-  ctx.globalAlpha = 1;
-  ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, W, H);
-  for (const s of stars) {
-    const tw = 0.55 + 0.45 * Math.sin(t * 1.4 + s.p);
-    ctx.globalAlpha = s.a * tw;
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.2832); ctx.fill();
-  }
-  ctx.globalAlpha = 1;
-  ctx.save(); ctx.globalCompositeOperation = 'lighter';
-  ctx.globalAlpha = 1; ctx.fillStyle = groundGrad; ctx.fillRect(0, 0, W, H);
-  ctx.restore();
-}
 
-function drawGodRays(t, intensity) {
-  if (intensity <= 0) return;
-  ctx.save();
-  ctx.globalCompositeOperation = 'lighter';
-  const ox = cx, oy = cy - ry * 0.35, R = Math.hypot(W, H) * 1.1;
-  const rays = 9, sweep = Math.sin(t * 0.07) * 0.18;
-  for (let i = 0; i < rays; i++) {
-    const a = -Math.PI / 2 + sweep + (i - (rays - 1) / 2) * 0.2;
-    const hw = 0.035 + 0.02 * (0.5 + 0.5 * Math.sin(t * 0.5 + i * 1.7));
-    const a1 = a - hw, a2 = a + hw;
-    const g = ctx.createLinearGradient(ox, oy, ox + Math.cos(a) * R, oy + Math.sin(a) * R);
-    g.addColorStop(0, `rgba(226,214,255,${0.10 * intensity})`);
-    g.addColorStop(0.5, `rgba(200,186,255,${0.05 * intensity})`);
-    g.addColorStop(1, 'rgba(200,186,255,0)');
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.moveTo(ox, oy);
-    ctx.lineTo(ox + Math.cos(a1) * R, oy + Math.sin(a1) * R);
-    ctx.lineTo(ox + Math.cos(a2) * R, oy + Math.sin(a2) * R);
-    ctx.closePath(); ctx.fill();
-  }
-  ctx.restore();
-}
-
-function drawGlow(t) {
-  const gi = clamp01((t - T.bloomT0) / (T.bloomSpan * 0.9));
-  if (gi <= 0) return;
-  ctx.save(); ctx.globalAlpha = gi; ctx.globalCompositeOperation = 'lighter';
-  ctx.fillStyle = glowGrad; ctx.fillRect(0, 0, W, H);
-  ctx.restore();
-}
-
-function drawBokeh(t, dt) {
-  ctx.save(); ctx.globalCompositeOperation = 'lighter';
-  for (const o of orbs) {
-    o.y += o.vy * dt; o.x += Math.sin(t * 0.3 + o.phase) * o.drift;
-    if (o.y < -o.r) { o.y = H + o.r; o.x = rand(0, W); }
-    ctx.globalAlpha = o.alpha;
-    ctx.drawImage(o.sprite, o.x - o.r, o.y - o.r, o.r * 2, o.r * 2);
-  }
-  ctx.restore();
-}
-
-function drawFloaters(t, dt, front) {
-  const appear = clamp01((t - 0.2) / 1.4);
-  if (appear <= 0) return;
-  for (const f of floaters) {
-    if ((f.depth >= 0.6) !== front) continue;
-    f.y -= f.vy * dt;
-    f.x += Math.sin(t * 0.5 + f.phase) * f.sway * dt;
-    f.rot += f.vrot * dt;
-    if (f.y < -f.box) { f.y = H + f.box; f.x = rand(0, W); }
-    drawSprite((f.soft ? SPR.soft : SPR.crisp)[f.idx], f.x, f.y, f.box, f.rot, f.baseA * appear);
-  }
-}
-
-function drawBranches(t) {
-  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  for (const b of branches) {
-    const f = clamp01((t - b.t0) / b.dur);
-    if (f <= 0) continue;
-    const e = easeOutCubic(f);
-    ctx.strokeStyle = b.grad;
-    const steps = 12, last = Math.max(1, Math.ceil(steps * e));
-    let prev = quad(b, 0);
-    for (let i = 1; i <= last; i++) {
-      const tt = Math.min(e, i / steps), p = quad(b, tt);
-      ctx.lineWidth = lerp(b.w0, b.w1, tt);
-      ctx.beginPath(); ctx.moveTo(prev.x, prev.y); ctx.lineTo(p.x, p.y); ctx.stroke();
-      prev = p;
-    }
-  }
-}
 
 function drawHearts(t) {
   const breathe = 1 + Math.sin(t * 0.8) * 0.012;
@@ -706,8 +619,7 @@ function sizeAct6() {
       ph: rand(0, 6.28), delay: 0.55 + i * 0.14,
     });
   }
-}
-
+                                  }
 function drawConstellation(t) {
   const vis = a6Const.map((st) => clamp01((t - st.delay) / 0.5));
   let avg = 0;
@@ -876,250 +788,8 @@ function updateButterflies(t, dt) {
       age: 0, life: 1.1, pts: []
     });
   }
-}
+                      }
 
-function drawTrails(t, sc) {
-  lctx.save(); lctx.globalCompositeOperation = 'lighter';
-  for (const b of butterflies) {
-    for (let i = b.pts.length - 1; i >= 0; i--) {
-      const p = b.pts[i];
-      const k = (t - p.t) / 1.6;
-      if (k >= 1) { b.pts.splice(i, 1); continue; }
-      lctx.globalAlpha = 0.8 * (1 - k);
-      lctx.fillStyle = b.v.mid;
-      lctx.beginPath();
-      lctx.arc(p.x, p.y, (0.5 + 2.8 * (1 - k)) * sc, 0, 6.2832);
-      lctx.fill();
-    }
-    for (let i = b.sparks.length - 1; i >= 0; i--) {
-      const s = b.sparks[i];
-      const k = (t - s.t) / 0.9;
-      if (k >= 1) { b.sparks.splice(i, 1); continue; }
-      lctx.globalAlpha = 0.9 * (1 - k);
-      lctx.fillStyle = '#ffe1a0';
-      lctx.beginPath();
-      lctx.arc(s.x, s.y, (0.7 + 1.4 * (1 - k)) * sc, 0, 6.2832);
-      lctx.fill();
-    }
-  }
-  lctx.restore();
-  lctx.globalAlpha = 1;
-}
-
-function drawButterfly(b, t, sc) {
-  const flap = Math.sin(t * 17 + b.ph * 2);
-  const open = 0.24 + 0.76 * Math.abs(flap);
-  const S = b.size * Math.min(a6W, a6H) * (1 + 0.05 * Math.sin(t * 9 + b.ph));
-  lctx.save();
-  lctx.translate(b.x, b.y);
-  lctx.rotate(b.ang + b.bank * (flap < 0 ? -1 : 1));
-  lctx.save(); lctx.globalCompositeOperation = 'lighter';
-  const g = lctx.createRadialGradient(0, 0, 0, 0, 0, S * 1.7);
-  g.addColorStop(0, b.v.glow); g.addColorStop(1, 'rgba(255,255,255,0)');
-  lctx.fillStyle = g;
-  lctx.beginPath(); lctx.arc(0, 0, S * 1.7, 0, 6.2832); lctx.fill();
-  lctx.restore();
-  for (const side of [-1, 1]) {
-    lctx.save();
-    lctx.scale(side * open, open);
-    const fw = S * 0.78, fh = S * 0.42;
-    lctx.save();
-    lctx.translate(S * 0.28, -S * 0.34);
-    lctx.rotate(-0.3);
-    const wg = lctx.createLinearGradient(0, -fh, 0, fh);
-    wg.addColorStop(0, b.v.top); wg.addColorStop(0.55, b.v.mid); wg.addColorStop(1, b.v.btm);
-    lctx.fillStyle = wg;
-    lctx.beginPath(); lctx.ellipse(0, 0, fw, fh, 0, 0, 6.2832); lctx.fill();
-    lctx.strokeStyle = 'rgba(255,255,255,0.55)';
-    lctx.lineWidth = S * 0.02;
-    lctx.beginPath(); lctx.moveTo(-fw * 0.5, 0); lctx.quadraticCurveTo(0, -fh * 0.4, fw * 0.4, -fh * 0.35); lctx.stroke();
-    lctx.beginPath(); lctx.moveTo(-fw * 0.5, 0); lctx.quadraticCurveTo(0, fh * 0.15, fw * 0.35, fh * 0.1); lctx.stroke();
-    lctx.restore();
-    lctx.fillStyle = 'rgba(255,255,255,0.8)';
-    lctx.beginPath(); lctx.arc(S * 0.52, -S * 0.34, S * 0.075, 0, 6.2832); lctx.fill();
-    lctx.fillStyle = '#ffe1a0';
-    lctx.beginPath(); lctx.arc(S * 0.34, -S * 0.22, S * 0.05, 0, 6.2832); lctx.fill();
-    lctx.save();
-    lctx.translate(S * 0.18, S * 0.3);
-    lctx.rotate(0.28);
-    const hw = S * 0.5, hh = S * 0.34;
-    const hg2 = lctx.createLinearGradient(0, -hh, 0, hh);
-    hg2.addColorStop(0, b.v.mid); hg2.addColorStop(1, b.v.btm);
-    lctx.fillStyle = hg2;
-    lctx.beginPath(); lctx.ellipse(0, 0, hw, hh, 0, 0, 6.2832); lctx.fill();
-    lctx.strokeStyle = 'rgba(255,255,255,0.4)';
-    lctx.lineWidth = S * 0.018;
-    lctx.beginPath(); lctx.moveTo(-hw * 0.5, 0); lctx.quadraticCurveTo(0, -hh * 0.4, hw * 0.42, -hh * 0.3); lctx.stroke();
-    lctx.restore();
-    lctx.restore();
-  }
-  lctx.strokeStyle = 'rgba(255,220,240,0.9)';
-  lctx.lineWidth = Math.max(1, S * 0.035);
-  lctx.lineCap = 'round';
-  lctx.beginPath(); lctx.moveTo(S * 0.5, -S * 0.06); lctx.quadraticCurveTo(S * 0.68, -S * 0.28, S * 0.82, -S * 0.3); lctx.stroke();
-  lctx.beginPath(); lctx.moveTo(S * 0.5, S * 0.06); lctx.quadraticCurveTo(S * 0.68, S * 0.28, S * 0.82, S * 0.3); lctx.stroke();
-  const bg3 = lctx.createLinearGradient(0, -S * 0.1, 0, S * 0.1);
-  bg3.addColorStop(0, '#4a2a56'); bg3.addColorStop(1, '#241330');
-  lctx.fillStyle = bg3;
-  lctx.beginPath(); lctx.ellipse(S * 0.05, 0, S * 0.5, S * 0.09, 0, 0, 6.2832); lctx.fill();
-  lctx.fillStyle = b.v.top;
-  lctx.beginPath(); lctx.arc(S * 0.52, 0, S * 0.09, 0, 6.2832); lctx.fill();
-  lctx.restore();
-}
-
-function drawAct6Frame(t, dt) {
-  const bg = lctx.createLinearGradient(0, 0, 0, a6H);
-  bg.addColorStop(0, '#221848');
-  bg.addColorStop(0.46, '#2d1f5c');
-  bg.addColorStop(0.78, '#372966');
-  bg.addColorStop(1, '#402f70');
-  lctx.fillStyle = bg; lctx.fillRect(0, 0, a6W, a6H);
-
-  if (t < 1.2) {
-    const f = t < 0.08 ? t / 0.08 : Math.max(0, 1 - (t - 0.08) / 1.12);
-    lctx.fillStyle = `rgba(255,246,255,${0.95 * f})`;
-    lctx.fillRect(0, 0, a6W, a6H);
-  }
-
-  for (const s of a6Stars) {
-    const tw = 0.55 + 0.45 * Math.sin(t * 1.4 + s.p);
-    lctx.globalAlpha = s.a * tw;
-    lctx.fillStyle = '#ffffff';
-    lctx.beginPath(); lctx.arc(s.x, s.y, s.r, 0, 6.2832); lctx.fill();
-  }
-  lctx.globalAlpha = 1;
-
-  lctx.save(); lctx.globalCompositeOperation = 'lighter';
-  const mg = lctx.createRadialGradient(a6W * 0.8, a6H * 0.13, 0, a6W * 0.8, a6H * 0.13, a6W * 0.24);
-  mg.addColorStop(0, 'rgba(190,170,255,0.16)');
-  mg.addColorStop(1, 'rgba(190,170,255,0)');
-  lctx.fillStyle = mg;
-  lctx.beginPath(); lctx.arc(a6W * 0.8, a6H * 0.13, a6W * 0.24, 0, 6.2832); lctx.fill();
-  for (const o of a6Orbs) {
-    const y = o.y - ((t * o.vy) % (a6H + 200));
-    const og = lctx.createRadialGradient(o.x, y, 0, o.x, y, o.r);
-    og.addColorStop(0, `rgba(222,214,255,${o.a})`);
-    og.addColorStop(1, 'rgba(222,214,255,0)');
-    lctx.fillStyle = og;
-    lctx.beginPath(); lctx.arc(o.x, y, o.r, 0, 6.2832); lctx.fill();
-  }
-  lctx.restore();
-
-  const sc = Math.min(a6W, a6H) / 800;
-  if (dt > 0) updateButterflies(t, dt);
-  drawTrails(t, sc);
-  for (const b of butterflies) drawButterfly(b, t, sc);
-
-  lctx.save(); lctx.globalCompositeOperation = 'lighter';
-  const gg = lctx.createRadialGradient(a6W * 0.5, a6H * 1.02, 0, a6W * 0.5, a6H * 1.02, a6W * 0.55);
-  gg.addColorStop(0, 'rgba(150,120,235,0.32)');
-  gg.addColorStop(1, 'rgba(150,120,235,0)');
-  lctx.fillStyle = gg; lctx.fillRect(0, 0, a6W, a6H);
-  lctx.restore();
-
-  drawConstellation(t);
-  drawAct6Particles(t, dt);
-}
-
-function act6Frame(now) {
-  if (!act6Last) act6Last = now;
-  const dt = Math.min(0.05, (now - act6Last) / 1000);
-  act6Last = now; act6T += dt;
-  drawAct6Frame(act6T, dt);
-  if (!a6Burst && act6T >= 2.05) wordBurst();
-  if (!replayArmed && act6T >= 5.4) { replayArmed = true; armReplay(); }
-  act6RAF = requestAnimationFrame(act6Frame);
-}
-
-function startAct6(staticMode) {
-  if (act6On && !staticMode) return;
-  act6On = true;
-  sizeAct6();
-  act6.classList.add('is-in');
-  gsap.to([wishEl, finaleEl], { opacity: 0, duration: 0.9, ease: 'power2.out' });
-  if (butterflies.length === 0) {
-    butterflies = [
-      { v: BV[0], ph: 0, speed: 0.5, ampX: 0.21, ampY: 0.17, size: 0.06, enter: 0, sx: a6W * -0.12, sy: a6H * 0.3, x: a6W * -0.12, y: a6H * 0.3, ang: 0, bank: 0, pts: [], sparks: [], lastSpark: 0, nextHeart: rand(1.6, 2.4) },
-      { v: BV[1], ph: 2.4, speed: 0.58, ampX: 0.16, ampY: 0.13, size: 0.05, enter: 0, sx: a6W * 1.12, sy: a6H * 0.78, x: a6W * 1.12, y: a6H * 0.78, ang: 0, bank: 0, pts: [], sparks: [], lastSpark: 0, nextHeart: rand(1.6, 2.4) },
-    ];
-  }
-  if (staticMode) {
-    for (const b of butterflies) {
-      b.enter = 1;
-      b.pts = []; b.sparks = [];
-      for (let i = 0; i < 30; i++) {
-        const tt = 999.2 - (29 - i) * 0.047;
-        const p = butterflyPos(b, tt);
-        b.pts.push({ x: p.x, y: p.y, t: tt });
-      }
-      const p = butterflyPos(b, 999);
-      b.x = p.x; b.y = p.y;
-      b.ang = Math.atan2(p.y - b.pts[b.pts.length - 2]?.y || 0, p.x - b.pts[b.pts.length - 2]?.x || 1);
-      b.bank = 0;
-    }
-    drawAct6Frame(999, 0);
-    return;
-  }
-  act6T = 0; act6Last = 0;
-  a6Burst = false;
-  bHearts = []; xBurst = []; a6Shoot = [];
-  lastCross = 0; lastShoot = 0;
-  act6RAF = requestAnimationFrame(act6Frame);
-}
-
-function stopAct6() {
-  act6On = false;
-  if (act6RAF) { cancelAnimationFrame(act6RAF); act6RAF = 0; }
-  act6.classList.remove('is-in');
-  gsap.set([wishEl, finaleEl], { clearProps: 'opacity' });
-  for (const b of butterflies) { b.pts = []; b.sparks = []; b.enter = 0; }
-  bHearts = []; xBurst = []; a6Shoot = [];
-}
-
-function treeFrame(now) {
-  if (!treeStartT) { treeStartT = now; treeLastT = now; }
-  const t = (now - treeStartT) / 1000;
-  const dt = Math.min(0.05, (now - treeLastT) / 1000);
-  treeLastT = now;
-
-  const rays = clamp01((t - T.bloomT0) / T.bloomSpan);
-
-  drawBackground(t);
-  drawGodRays(t, rays);
-  drawGlow(t);
-  drawBokeh(t, dt);
-  drawFloaters(t, dt, false);
-  drawBranches(t);
-  drawHearts(t);
-  updateTwinkles(t, dt);
-  updateRisers(t, dt);
-  if (t > T.petalT0 && now - lastPetal > 150) { spawnPetal(); spawnPetal(); lastPetal = now; }
-  drawPetals(t, dt);
-  drawRested();
-  drawFloaters(t, dt, true);
-  updateComet(t, dt);
-  drawFinaleHeart(t);
-
-  showWish(t >= T.noteStart);
-  showFinale(t >= F.text);
-
-  if (!act6On && t >= T.done + 3.0) startAct6();
-
-  treeRAF = requestAnimationFrame(treeFrame);
-}
-
-function treeStart() {
-  treeStartT = 0; treeLastT = 0; lastPetal = 0; replayArmed = false;
-  risers = []; comet = null;
-  showFinale(false);
-  buildScene();
-  if (!treeRAF) treeRAF = requestAnimationFrame(treeFrame);
-}
-
-function treeStop() {
-  if (treeRAF) { cancelAnimationFrame(treeRAF); treeRAF = 0; }
-  ctx.clearRect(0, 0, W, H);
-}
 
 function drawFinal() {
   buildScene();
@@ -1220,16 +890,18 @@ class SoundEngine {
   }
 
   toggle() {
-  this.enabled = !this.enabled;
-  localStorage.setItem('romantic_sound_enabled', this.enabled ? 'true' : 'false');
-  if (this.enabled) {
-    this.init();
-    this.playChime(587.33, 1.5);
-  } else {
-    this.stopAmbient();
+    this.enabled = !this.enabled;
+    localStorage.setItem('romantic_sound_enabled', this.enabled ? 'true' : 'false');
+    if (this.enabled) {
+      this.init();
+      this.playChime(587.33, 1.5);
+      this.startAmbient();
+    } else {
+      this.stopAmbient();
+    }
+    return this.enabled;
   }
-  return this.enabled;
-  }
+}
 
 const soundEngine = new SoundEngine();
 
@@ -1630,7 +1302,7 @@ function enter() {
   gsap.set(target, { opacity: 0, y: 10, scaleX: 0.9, scaleY: 0.9 });
   gsap.set(heartGlow, { opacity: 0, scale: 1 });
 
-  const tl = gsap.timeline();
+  const tl = gsap.timeline({ onComplete: startBeat });
   tl.to(target, { opacity: 1, y: 0, scaleX: 1, scaleY: 1, duration: 0.8, ease: 'power3.out' }, 0.1)
     .to(heartGlow, { opacity: 0.7, duration: 0.8, ease: 'power2.out' }, 0.2)
     .to(eyebrow, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.4)
@@ -1693,4 +1365,114 @@ if (reduceMotion) {
   Promise.race([fontsReady, new Promise((resolve) => setTimeout(resolve, 2500))]).then(() => { enter(); });
   replay.addEventListener('click', resetAll);
 }
+
+
+let played = false;
+
+function fire() {
+  if (played) return;
+  played = true;
+  soundEngine.playChime(659.25, 2.0);
+  stopBeat();
+  
+  const bgMusic = document.getElementById('bgMusic');
+  if (bgMusic) {
+    bgMusic.volume = 0.6;
+    bgMusic.play().catch(() => {});
+  }
+  
+  filmTL = buildFilm(tapGeom());
+  filmTL.play(0);
+}
+
+function ripple(x, y) {
+  const r = document.createElement('span');
+  r.className = 'ripple';
+  r.style.left = x + 'px';
+  r.style.top = y + 'px';
+  hero.appendChild(r);
+  gsap.fromTo(r, { scale: 0.2, opacity: 0.6 }, { scale: 1, opacity: 0, duration: 0.55, ease: 'power2.out', onComplete: () => r.remove() });
+}
+
+hero.addEventListener('pointerdown', (e) => {
+  if (played) return;
+  const hr = hero.getBoundingClientRect();
+  ripple(e.clientX - hr.left, e.clientY - hr.top);
+  fire();
+});
+hero.addEventListener('keydown', (e) => {
+  if (played) return;
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fire(); }
+});
+
+function enter() {
+  gsap.set(hero, { autoAlpha: 1 });
+  gsap.set([eyebrow, hint], { opacity: 0, y: 14 });
+  gsap.set(target, { opacity: 0, y: 10, scaleX: 0.9, scaleY: 0.9 });
+  gsap.set(heartGlow, { opacity: 0, scale: 1 });
+
+  const tl = gsap.timeline({ onComplete: startBeat });
+  tl.to(target, { opacity: 1, y: 0, scaleX: 1, scaleY: 1, duration: 0.8, ease: 'power3.out' }, 0.1)
+    .to(heartGlow, { opacity: 0.7, duration: 0.8, ease: 'power2.out' }, 0.2)
+    .to(eyebrow, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.4)
+    .to(hint, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.7);
+}
+
+function armReplay() {
+  replay.hidden = false;
+  requestAnimationFrame(() => replay.classList.add('is-shown'));
+}
+
+function resetAll() {
+  treeStop();
+  stopAct6();
+  showWish(false);
+  showFinale(false);
+  replayArmed = false;
+  replay.classList.remove('is-shown'); replay.hidden = true;
+  if (filmTL) { filmTL.pause(0); }
+  gsap.set([flood, bloom], { autoAlpha: 0 });
+  gsap.set(field, { autoAlpha: 0 });
+  played = false;
+  enter();
+}
+
+function resize() {
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = canvas.clientWidth; H = canvas.clientHeight;
+  canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  buildSprites();
+  buildScene();
+  if (act6On) {
+    sizeAct6();
+    bHearts = []; xBurst = []; a6Shoot = [];
+    if (reduceMotion) startAct6(true);
+    else for (const b of butterflies) { b.pts = []; b.sparks = []; }
+  }
+  if (reduceMotion) { drawFinal(); return; }
+  if (played && filmTL) {
+    const at = filmTL.time(); const active = filmTL.isActive();
+    filmTL = buildFilm(tapGeom());
+    filmTL.pause(at);
+    if (active) filmTL.play(at);
+  }
+}
+let resizeRAF = 0;
+window.addEventListener('resize', () => { if (resizeRAF) return; resizeRAF = requestAnimationFrame(() => { resizeRAF = 0; resize(); }); });
+
+// Initialize UI Controls & Config
+initUIControls();
+resize();
+
+if (reduceMotion) {
+  drawFinal();
+  startAct6(true);
+} else {
+  buildMotes();
+  const fontsReady = (document.fonts && document.fonts.ready) || Promise.resolve();
+  Promise.race([fontsReady, new Promise((resolve) => setTimeout(resolve, 2500))]).then(() => { enter(); });
+  replay.addEventListener('click', resetAll);
+                             }
+
 
