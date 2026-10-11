@@ -1636,7 +1636,7 @@ function enter() {
   gsap.set(target, { opacity: 0, y: 10, scaleX: 0.9, scaleY: 0.9 });
   gsap.set(heartGlow, { opacity: 0, scale: 1 });
 
-  const tl = gsap.timeline({ onComplete: startBeat });
+  const tl = gsap.timeline();
   tl.to(target, { opacity: 1, y: 0, scaleX: 1, scaleY: 1, duration: 0.8, ease: 'power3.out' }, 0.1)
     .to(heartGlow, { opacity: 0.7, duration: 0.8, ease: 'power2.out' }, 0.2)
     .to(eyebrow, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.4)
