@@ -1596,10 +1596,19 @@ function fire() {
   soundEngine.playChime(659.25, 2.0);
   stopBeat();
   
+  // Music force play karo
   const bgMusic = document.getElementById('bgMusic');
   if (bgMusic) {
     bgMusic.volume = 0.6;
-    bgMusic.play().catch(() => {});
+    const playPromise = bgMusic.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Agar autoplay block ho, toh user interaction ke baad play karo
+        setTimeout(() => {
+          bgMusic.play().catch(() => {});
+        }, 100);
+      });
+    }
   }
   
   filmTL = buildFilm(tapGeom());
